@@ -1,0 +1,26 @@
+1. I am implementing the number method
+    in that i have to do it in 3 parts get till numbers
+    then get the dot if present and also check the next one
+    then number again if fount the valid dot
+
+
+
+
+11:48
+So in this chapter, we do it like
+1. crates a basic input output
+2. creates a run method to run the script
+3. add error logging method and flag to make script not to run
+4. adds a scanner class to scan the tokens
+5. to find the token we created all the tokens as enum
+6. try to match them with current character.
+7. use some methods like advance, peek, peek next
+8. after identifying the character check if it is somewhat like !/>|< then check all the possible combos >=
+9. after that identify the error and log it
+10. find the numbers
+    - find until other character is found.
+    - find until . then some number is found
+11. find the identifier
+    - check if consumed string is know then give that type
+    - if not known then mark it as identifier
+12. also finding the comments and ignore until next line is not found.
