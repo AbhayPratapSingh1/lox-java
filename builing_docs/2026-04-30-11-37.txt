@@ -24,3 +24,4 @@ So in this chapter, we do it like
     - check if consumed string is know then give that type
     - if not known then mark it as identifier
 12. also finding the comments and ignore until next line is not found.
+

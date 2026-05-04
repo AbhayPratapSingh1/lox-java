@@ -19,22 +19,22 @@ public class Scanner {
 
     static {
         keywords = new HashMap<>();
-        keywords.put("and",    AND);
-        keywords.put("class",  CLASS);
-        keywords.put("else",   ELSE);
-        keywords.put("false",  FALSE);
-        keywords.put("for",    FOR);
-        keywords.put("fun",    FUN);
-        keywords.put("if",     IF);
-        keywords.put("nil",    NIL);
-        keywords.put("or",     OR);
-        keywords.put("print",  PRINT);
+        keywords.put("and", AND);
+        keywords.put("class", CLASS);
+        keywords.put("else", ELSE);
+        keywords.put("false", FALSE);
+        keywords.put("for", FOR);
+        keywords.put("fun", FUN);
+        keywords.put("if", IF);
+        keywords.put("nil", NIL);
+        keywords.put("or", OR);
+        keywords.put("print", PRINT);
         keywords.put("return", RETURN);
-        keywords.put("super",  SUPER);
-        keywords.put("this",   THIS);
-        keywords.put("true",   TRUE);
-        keywords.put("var",    VAR);
-        keywords.put("while",  WHILE);
+        keywords.put("super", SUPER);
+        keywords.put("this", THIS);
+        keywords.put("true", TRUE);
+        keywords.put("var", VAR);
+        keywords.put("while", WHILE);
     }
 
     public Scanner(String source) {
@@ -86,20 +86,22 @@ public class Scanner {
                 addToken(STAR);
                 break;
             case '!':
-                addToken(match('=') ? BANG_EQUAL : BANG);
+                addToken(matchAndConsume('=') ? BANG_EQUAL : BANG);
                 break;
             case '=':
-                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+                addToken(matchAndConsume('=') ? EQUAL_EQUAL : EQUAL);
                 break;
             case '<':
-                addToken(match('=') ? LESS_EQUAL : LESS);
+                addToken(matchAndConsume('=') ? LESS_EQUAL : LESS);
                 break;
             case '>':
-                addToken(match('=') ? GREATER_EQUAL : GREATER);
+                addToken(matchAndConsume('=') ? GREATER_EQUAL : GREATER);
                 break;
             case '/':
-                if (match('/')) {
+                if (matchAndConsume('/')) {
                     while (peek() != '\n' && isAtEnd()) advance();
+                } else if (matchAndConsume('*')) {
+                    multiLineComment();
                 } else {
                     addToken(SLASH);
                 }
@@ -128,6 +130,24 @@ public class Scanner {
         }
     }
 
+    private void multiLineComment() {
+        while (!isAtEnd() && (peek() != '*' || (!isLast() && peekNext() != '/'))) {
+            char c = advance();
+            if (c == '/' && !isLast() && peek() == '*') {
+                advance();
+                multiLineComment();
+            }
+        }
+        if (!isAtEnd()){
+            advance();
+            advance();
+        }
+    }
+
+    private boolean isLast() {
+        return current == source.length() - 1;
+    }
+
     private void identifier() {
         while (isAlphaNumeric(peek())) advance();
         TokenType type = keywords.get(source.substring(start, current));
@@ -140,7 +160,7 @@ public class Scanner {
     }
 
     private boolean isAlpha(char c) {
-        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' ||  c == '_';
+        return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_';
     }
 
     private void number() {
@@ -179,7 +199,7 @@ public class Scanner {
         return source.charAt(current);
     }
 
-    private boolean match(char expected) {
+    private boolean matchAndConsume(char expected) {
         if (isAtEnd()) return false;
         if (source.charAt(current) != expected) return false;
         current++;
