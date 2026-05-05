@@ -42,10 +42,11 @@ public class Lox {
         }
     }
 
-    private static void run(String source) {
+    public static List<Token> run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens  = scanner.scanTokens();
         System.out.println(tokens);
+        return tokens;
     }
 
     public static void error(int line, String message) {

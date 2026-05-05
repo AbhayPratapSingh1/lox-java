@@ -85,6 +85,10 @@ public class Scanner {
             case '*':
                 addToken(STAR);
                 break;
+            case '_':
+                addToken(UNDERSCORE);
+                break;
+
             case '!':
                 addToken(matchAndConsume('=') ? BANG_EQUAL : BANG);
                 break;
@@ -97,9 +101,10 @@ public class Scanner {
             case '>':
                 addToken(matchAndConsume('=') ? GREATER_EQUAL : GREATER);
                 break;
+
             case '/':
                 if (matchAndConsume('/')) {
-                    while (peek() != '\n' && isAtEnd()) advance();
+                    while (peek() != '\n' && !isAtEnd()) advance();
                 } else if (matchAndConsume('*')) {
                     multiLineComment();
                 } else {
@@ -133,6 +138,9 @@ public class Scanner {
     private void multiLineComment() {
         while (!isAtEnd() && (peek() != '*' || (!isLast() && peekNext() != '/'))) {
             char c = advance();
+            if (c == '\n'){
+                line++;
+            }
             if (c == '/' && !isLast() && peek() == '*') {
                 advance();
                 multiLineComment();
@@ -140,6 +148,8 @@ public class Scanner {
         }
         if (!isAtEnd()){
             advance();
+        }
+        if (!isAtEnd()){
             advance();
         }
     }
