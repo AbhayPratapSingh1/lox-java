@@ -826,4 +826,22 @@ class ScannerTest {
 
     }
 
+    @Nested
+    @Description("Multiple Comments followed")
+    class MultipleCommentsAreFollowed {
+
+        @Test
+        @Description("should identify identifiers between several comments")
+        void multiComments() {
+            Scanner scanner = new Scanner("// adsf \na//asdf \n //sd \n /* aslkjf\nasdf\nafs\ndga\n */ b// /*asdf*/");
+            List<Token> tokens = scanner.scanTokens();
+            List<Token> expectedTokens = new ArrayList<>();
+
+            expectedTokens.add(new Token(TokenType.IDENTIFIER, "a", null, 2));
+            expectedTokens.add(new Token(TokenType.IDENTIFIER, "b", null, 8));
+            expectedTokens.add(new Token(TokenType.EOF, "", null, 8));
+
+            assertEquals(expectedTokens, tokens);
+        }
+    }
 }
