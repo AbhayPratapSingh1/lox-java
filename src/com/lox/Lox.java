@@ -9,6 +9,8 @@ public class Lox {
     private static boolean hasError = false;
 
     static void main(String[] args) throws IOException {
+
+
         if (args.length > 1){
           System.out.println("Usage: jlox [script]");
             System.exit(64);
