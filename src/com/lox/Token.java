@@ -1,4 +1,4 @@
-package com.lox.utils;
+package com.lox;
 
 import java.util.Objects;
 

@@ -1,7 +1,5 @@
 package com.lox;
 
-import com.lox.utils.Token;
-import com.lox.utils.TokenType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

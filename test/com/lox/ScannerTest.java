@@ -1,8 +1,5 @@
 package com.lox;
 
-import com.lox.utils.Scanner;
-import com.lox.utils.Token;
-import com.lox.utils.TokenType;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
