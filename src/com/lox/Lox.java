@@ -9,15 +9,13 @@ public class Lox {
     private static boolean hasError = false;
 
     static void main(String[] args) throws IOException {
-
-
-        if (args.length > 1){
-          System.out.println("Usage: jlox [script]");
+        if (args.length > 1) {
+            System.out.println("Usage: jlox [script]");
             System.exit(64);
-        } else if (args.length == 1){
+        } else if (args.length == 1) {
             System.out.println(" File Mode");
 
-            if (hasError){
+            if (hasError) {
                 System.exit(65);
             }
         } else {
@@ -27,13 +25,13 @@ public class Lox {
     }
 
     static void runInteractive() throws IOException {
-        InputStreamReader inputStream =new InputStreamReader(System.in);
-        BufferedReader reader  = new BufferedReader(inputStream);
+        InputStreamReader inputStream = new InputStreamReader(System.in);
+        BufferedReader reader = new BufferedReader(inputStream);
 
-        while(true){
+        while (true) {
             String line = reader.readLine();
-            System.out.println("INTERPRETER MODE : "+line);
-            if(line.equals("exit")){
+            System.out.println("INTERPRETER MODE : " + line);
+            if (line.equals("exit")) {
                 break;
             }
             run(line);
@@ -41,20 +39,31 @@ public class Lox {
         }
     }
 
-    public static List<Token> run(String source) {
+    public static void run(String source) {
         Scanner scanner = new Scanner(source);
-        List<Token> tokens  = scanner.scanTokens();
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        Expr expr = parser.parse();
+        if (hasError) return;
+
         System.out.println(tokens);
-        return tokens;
+        System.out.println(new AstPrinter().print(expr));
     }
 
     public static void error(int line, String message) {
-        report(line, "",message);
+        report(line, "", message);
     }
 
     private static void report(int line, String where, String message) {
-        System.out.println("[line "+line+"] Error " + where+ ": "+message );
+        System.out.println("[line " + line + "] Error " + where + ": " + message);
         hasError = true;
     }
 
+    public static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", message);
+        } else {
+            report(token.line, "at '" + token.lexeme + "'", message);
+        }
+    }
 }
