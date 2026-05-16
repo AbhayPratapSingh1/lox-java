@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Lox {
     private static boolean hasError = false;
+    private static boolean hadRuntimeError = false;
+    private static final Interpreter interpreter = new Interpreter();
 
     static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -17,6 +19,9 @@ public class Lox {
 
             if (hasError) {
                 System.exit(65);
+            }
+            if (hadRuntimeError) {
+                System.exit(70);
             }
         } else {
             System.out.println(" REPL");
@@ -36,6 +41,7 @@ public class Lox {
             }
             run(line);
             hasError = false;
+            hadRuntimeError = false;
         }
     }
 
@@ -44,10 +50,12 @@ public class Lox {
         List<Token> tokens = scanner.scanTokens();
         Parser parser = new Parser(tokens);
         Expr expr = parser.parse();
-        if (hasError) return;
 
+        if (hasError) return;
         System.out.println(tokens);
+
         System.out.println(new AstPrinter().print(expr));
+        System.out.println(interpreter.interpret(expr));
     }
 
     public static void error(int line, String message) {
@@ -65,5 +73,10 @@ public class Lox {
         } else {
             report(token.line, "at '" + token.lexeme + "'", message);
         }
+    }
+
+    public static void runTimeError(RuntimeError error) {
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        hadRuntimeError = true;
     }
 }
