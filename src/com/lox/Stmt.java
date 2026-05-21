@@ -1,39 +1,53 @@
 package com.lox;
 
-abstract class Stmt {
+abstract class Stmt{
 
-    interface Visitor<R> {
-        R visitExpressionStmt(Expression stmt);
+	interface Visitor<R> {
+		R visitExpressionStmt(Expression stmt);
+		R visitPrintStmt(Print stmt);
+		R visitVarStmt(Var stmt);
+	}
 
-        R visitPrintStmt(Print stmt);
-    }
+	static class Expression extends Stmt {
+		public Expression(Expr expression) {
+			this.expression = expression;
+		}
 
-    static class Expression extends Stmt {
-        public Expression(Expr expression) {
-            this.expression = expression;
-        }
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitExpressionStmt(this);
+		}
 
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-            return visitor.visitExpressionStmt(this);
-        }
+		final Expr expression;
+	}
 
-        final Expr expression;
-    }
+	static class Print extends Stmt {
+		public Print(Expr expression) {
+			this.expression = expression;
+		}
 
-    static class Print extends Stmt {
-        public Print(Expr expression) {
-            this.expression = expression;
-        }
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitPrintStmt(this);
+		}
 
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-            return visitor.visitPrintStmt(this);
-        }
+		final Expr expression;
+	}
 
-        final Expr expression;
-    }
+	static class Var extends Stmt {
+		public Var(Token name, Expr initializer) {
+			this.name = name;
+			this.initializer = initializer;
+		}
 
-    abstract <R> R accept(Visitor<R> visitor);
+		@Override
+		<R> R accept(Visitor<R> visitor) {
+			return visitor.visitVarStmt(this);
+		}
+
+		final Token name;
+		final Expr initializer;
+	}
+		abstract <R> R accept(Visitor<R> visitor);
 
 }

@@ -25,3 +25,15 @@ So in this chapter, we do it like
     - if not known then mark it as identifier
 12. also finding the comments and ignore until next line is not found.
 
+
+
+21-05-2025
+chapter 8
+part 8.2
+
+1. till now i implemented the smt just like the expr using the astgenerator
+2. uses same pattern visitor one
+3. differentiating between expression and print statement
+4. uses the common pattern match for this.
+5. now its about the variable which seems interesting
+

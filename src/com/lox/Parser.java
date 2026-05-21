@@ -15,21 +15,60 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return assignment();
+    }
+
+    private Expr assignment() {
+        Expr expr = equality();
+        if (match(EQUAL)){
+            Token equals = previous();
+            Expr value = assignment();
+            if (expr instanceof Expr.Variable){
+                Token name = ((Expr.Variable)expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
+        }
+        return expr;
     }
 
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
 
         try {
-            while (!isAtEnd()){
-                statements.add(statement());
+            while (!isAtEnd()) {
+                statements.add(declaration());
+
             }
 
         } catch (ParseError error) {
             return null;
         }
+
         return statements;
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(VAR)) return varDeclaration();
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect variable name.");
+        Expr initializer = null;
+        if (match(EQUAL)) {
+            initializer = expression();
+        }
+
+        consume(SEMICOLON, "Expect ';' after variable declaration.");
+
+        return new Stmt.Var(name, initializer);
     }
 
     private Stmt statement() {
@@ -90,7 +129,6 @@ public class Parser {
     }
 
     private Expr unary() {
-
         while (match(BANG, MINUS)) {
             Token operator = previous();
             Expr right = unary();
@@ -111,14 +149,14 @@ public class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
+        if (match(IDENTIFIER)){
+            return new Expr.Variable(previous());
+        }
         throw error(peek(), "Expect expression.");
     }
 
-    private void consume(TokenType tokenType, String message) {
-        if (check(tokenType)) {
-            advance();
-            return;
-        }
+    private Token consume(TokenType tokenType, String message) {
+        if (check(tokenType)) return advance();
 
         throw error(peek(), message);
     }
