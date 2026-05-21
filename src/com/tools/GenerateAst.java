@@ -19,6 +19,11 @@ public class GenerateAst {
                 "Grouping : Expr expression",
                 "Literal : Object value"
         ));
+
+        defineAst(outputDir, "Stmt", Arrays.asList(
+                "Expression : Expr expression",
+                "Print : Expr expression"
+        ));
     }
 
     private static void defineAst(String outputDir, String basename, List<String> types) throws IOException {

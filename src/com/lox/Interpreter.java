@@ -1,6 +1,8 @@
 package com.lox;
 
-public class Interpreter implements Expr.Visitor<Object> {
+import java.util.List;
+
+public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
 
@@ -114,15 +116,19 @@ public class Interpreter implements Expr.Visitor<Object> {
     }
 
 
-    Object interpret(Expr expr) {
+    Object interpret(List<Stmt> stmts) {
         try {
-            Object evaluated = evaluate(expr);
-            return stringify(evaluated);
+            for (Stmt stmt : stmts) {
+                execute(stmt);
+            }
         } catch (RuntimeError error) {
-            System.out.println(error);
             Lox.runTimeError(error);
         }
         return null;
+    }
+
+    private void execute(Stmt stmt) {
+        stmt.accept(this);
     }
 
     private String stringify(Object object) {
@@ -135,5 +141,18 @@ public class Interpreter implements Expr.Visitor<Object> {
             return text;
         }
         return object.toString();
+    }
+
+    @Override
+    public Object visitExpressionStmt(Stmt.Expression stmt) {
+        evaluate(stmt.expression);
+        return null;
+    }
+
+    @Override
+    public Object visitPrintStmt(Stmt.Print stmt) {
+        Object value = evaluate(stmt.expression);
+        System.out.println(value);
+        return null;
     }
 }
