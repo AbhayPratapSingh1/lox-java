@@ -1,0 +1,66 @@
+var val = 3;
+
+if (val % 3 == 0){
+    if (val % 5 == 0){
+        print "FizzBuzz";
+    } else {
+        print "Fizz";
+    }
+} else {
+    if (val % 5 == 0){
+        print "Buzz";
+    } else {
+        print val;
+    }
+}
+
+
+val = 5;
+
+if (val % 3 == 0){
+    if (val % 5 == 0){
+        print "FizzBuzz";
+    } else {
+        print "Fizz";
+    }
+} else {
+    if (val % 5 == 0){
+        print "Buzz";
+    } else {
+        print val;
+    }
+}
+
+
+val = 15;
+
+if (val % 3 == 0){
+    if (val % 5 == 0){
+        print "FizzBuzz";
+    } else {
+        print "Fizz";
+    }
+} else {
+    if (val % 5 == 0){
+        print "Buzz";
+    } else {
+        print val;
+    }
+}
+
+
+val = 1;
+
+if (val % 3 == 0){
+    if (val % 5 == 0){
+        print "FizzBuzz";
+    } else {
+        print "Fizz";
+    }
+} else {
+    if (val % 5 == 0){
+        print "Buzz";
+    } else {
+        print val;
+    }
+}
