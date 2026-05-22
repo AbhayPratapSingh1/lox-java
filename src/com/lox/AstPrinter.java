@@ -30,6 +30,11 @@ public class AstPrinter implements Expr.Visitor {
     }
 
     @Override
+    public Object visitLogicalExpr(Expr.Logical expr) {
+        return null;
+    }
+
+    @Override
     public Object visitUnaryExpr(Expr.Unary expr) {
 
         return parenthesize(expr.operator.lexeme, expr.right);

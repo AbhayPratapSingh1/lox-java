@@ -186,6 +186,14 @@ environment.assign(expr.name, value);
         return null;
     }
 
+    @Override
+    public Object visitWhileStmt(Stmt.While stmt) {
+        while (isTruthy(evaluate(stmt.condition))){
+            execute(stmt.body);
+        }
+        return null;
+    }
+
     private void extracted(Stmt.If stmt) {
         evaluate(stmt.condition);
     }
@@ -193,7 +201,7 @@ environment.assign(expr.name, value);
     @Override
     public Object visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
-        System.out.println(value);
+        System.out.println(stringify(value));
         return null;
     }
 

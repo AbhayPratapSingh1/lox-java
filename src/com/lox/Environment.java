@@ -40,8 +40,9 @@ public class Environment {
         }
         if (this.enclosing != null){
             this.enclosing.assign(name, value);
+            return;
         }
-
+        System.out.println();
         throw new RuntimeError(name,"Undefined variable '" + name.lexeme + "'.");
     }
 }
