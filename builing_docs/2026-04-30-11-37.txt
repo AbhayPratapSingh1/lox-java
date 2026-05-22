@@ -37,3 +37,27 @@ part 8.2
 4. uses the common pattern match for this.
 5. now its about the variable which seems interesting
 
+
+22-05-2025
+Chapter 8
+part 8.3
+
+1. Environment is just a lookup table allows to store the variable name and the token details in it.
+2. whenever we find a var declaration we try to consume the variable name and its value
+3. if no value is present we define it as null (nil in this case)
+4. Whenever we find some identifier, and we try to access it then it check for the environment basically a lookup
+5. lookup throws error whenever we are unable to find some value.
+6. scope maybe interesting since it seems like a nexted environment variables.
+
+
+Chapter 8
+part 8.4
+
+1. assignment is simple just assign the value if the value exist otherwise throw the error in it.
+
+Chapter 8
+part 8.5
+
+1. Scoping is like calling a method with different environment scope.
+2. Also resetting it once it stop executing the block.
+3. Left brace is responsible for starting new block and the right block is responsible for the right brace.

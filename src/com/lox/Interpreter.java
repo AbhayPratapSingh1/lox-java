@@ -154,6 +154,8 @@ environment.assign(expr.name, value);
         return object.toString();
     }
 
+
+
     @Override
     public Object visitExpressionStmt(Stmt.Expression stmt) {
         evaluate(stmt.expression);
@@ -181,5 +183,23 @@ environment.assign(expr.name, value);
         }
         environment.define(stmt.name.lexeme, value);
         return null;
+    }
+
+    @Override
+    public Object visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
+    }
+
+    private void executeBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+        try{
+            this.environment = environment;
+            for (Stmt statement: statements){
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
     }
 }
