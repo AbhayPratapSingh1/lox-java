@@ -1,12 +1,10 @@
 package com.lox;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -20,20 +18,22 @@ public class Lox {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
         } else if (args.length == 1) {
-            System.out.println(" File Mode");
-
             byte[] fileContent = Files.readAllBytes(Paths.get(args[0]));
-            run(new String(fileContent, Charset.defaultCharset()));
-
-            if (hasError) {
-                System.exit(65);
-            }
-            if (hadRuntimeError) {
-                System.exit(70);
-            }
+            runFile(fileContent);
         } else {
             System.out.println(" REPL");
             runInteractive();
+        }
+    }
+
+    private static void runFile(byte[] fileContent) {
+        run(new String(fileContent, Charset.defaultCharset()));
+
+        if (hasError) {
+            System.exit(65);
+        }
+        if (hadRuntimeError) {
+            System.exit(70);
         }
     }
 
@@ -47,21 +47,22 @@ public class Lox {
             if (line.equals("exit")) {
                 break;
             }
-            run(line);
+            Object result = run(line);
+            System.out.println(result);
             hasError = false;
             hadRuntimeError = false;
         }
     }
 
-    public static void run(String source) {
+    public static Object run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
         Parser parser = new Parser(tokens);
         List<Stmt> expr = parser.parse();
 
-        if (hasError) return;
+        if (hasError) return null;
 
-        interpreter.interpret(expr);
+        return interpreter.interpret(expr);
     }
 
     public static void error(int line, String message) {

@@ -128,18 +128,20 @@ environment.assign(expr.name, value);
 
 
     Object interpret(List<Stmt> stmts) {
+        Object lastResult = null;
+
         try {
             for (Stmt stmt : stmts) {
-                execute(stmt);
+                lastResult = execute(stmt);
             }
         } catch (RuntimeError error) {
             Lox.runTimeError(error);
         }
-        return null;
+        return lastResult;
     }
 
-    private void execute(Stmt stmt) {
-        stmt.accept(this);
+    private Object execute(Stmt stmt) {
+        return stmt.accept(this);
     }
 
     private String stringify(Object object) {
@@ -158,8 +160,7 @@ environment.assign(expr.name, value);
 
     @Override
     public Object visitExpressionStmt(Stmt.Expression stmt) {
-        evaluate(stmt.expression);
-        return null;
+        return evaluate(stmt.expression);
     }
 
     @Override
@@ -187,19 +188,20 @@ environment.assign(expr.name, value);
 
     @Override
     public Object visitBlockStmt(Stmt.Block stmt) {
-        executeBlock(stmt.statements, new Environment(environment));
-        return null;
+        return executeBlock(stmt.statements, new Environment(environment));
     }
 
-    private void executeBlock(List<Stmt> statements, Environment environment) {
+    private Object executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
+        Object result = null;
         try{
             this.environment = environment;
             for (Stmt statement: statements){
-                execute(statement);
+                result = execute(statement);
             }
         } finally {
             this.environment = previous;
         }
+        return result;
     }
 }
