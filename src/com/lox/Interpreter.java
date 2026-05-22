@@ -63,7 +63,7 @@ environment.assign(expr.name, value);
                 }
 
                 if (left instanceof String && right instanceof String) {
-                    return (String) left + (String) right;
+                    return left + (String) right;
                 }
 
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
@@ -76,14 +76,14 @@ environment.assign(expr.name, value);
     public Object visitUnaryExpr(Expr.Unary expr) {
 
         Object right = evaluate(expr.right);
-        switch (expr.operator.type) {
-            case MINUS:
+        return switch (expr.operator.type) {
+            case MINUS -> {
                 checkNumberOperant(expr.operator, right);
-                return -(double) right;
-            case BANG:
-                return !isTruthy(right);
-        }
-        return null;
+                yield -(double) right;
+            }
+            case BANG -> !isTruthy(right);
+            default -> null;
+        };
     }
 
 
