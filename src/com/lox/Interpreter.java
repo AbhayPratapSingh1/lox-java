@@ -44,6 +44,10 @@ environment.assign(expr.name, value);
                 checkNumberOperant(expr.operator, left, right);
                 return (Double) left / (Double) right;
 
+            case PERCENTAGE:
+                checkNumberOperant(expr.operator, left, right);
+                return (Double) left % (Double) right;
+
             case STAR:
                 checkNumberOperant(expr.operator, left, right);
                 return (Double) left * (Double) right;
@@ -156,11 +160,23 @@ environment.assign(expr.name, value);
         return object.toString();
     }
 
-
-
     @Override
     public Object visitExpressionStmt(Stmt.Expression stmt) {
         return evaluate(stmt.expression);
+    }
+
+    @Override
+    public Object visitIfStmt(Stmt.If stmt) {
+        if (isTruthy(evaluate(stmt.condition))){
+            execute(stmt.thenBranch);
+        } else{
+            execute(stmt.elseBranch);
+        }
+        return null;
+    }
+
+    private void extracted(Stmt.If stmt) {
+        evaluate(stmt.condition);
     }
 
     @Override

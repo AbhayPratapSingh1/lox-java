@@ -1,0 +1,22 @@
+var a = "Even";
+var b = "Odd";
+
+var val = 4;
+
+print "next line should be even";
+if (val % 2 == 0){
+    print a;
+} else {
+    print b;
+}
+
+val = 5;
+
+print "next line should be odd";
+
+if (val % 2 == 0){
+
+    print a;
+} else {
+    print b;
+}

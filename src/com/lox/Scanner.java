@@ -83,10 +83,12 @@ public class Scanner {
             case '*':
                 addToken(STAR);
                 break;
+            case '%':
+                addToken(PERCENTAGE);
+                break;
             case '_':
                 addToken(UNDERSCORE);
                 break;
-
             case '!':
                 addToken(matchAndConsume('=') ? BANG_EQUAL : BANG);
                 break;
