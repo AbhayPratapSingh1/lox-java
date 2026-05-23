@@ -1,0 +1,32 @@
+fun makeCounter() {
+  var i = 0;
+  fun count() {
+    i = i + 1;
+    return i;
+  }
+
+  return count;
+}
+
+fun doubleCounter(counter){
+    fun count(){
+        counter();
+        return counter();
+    }
+    return count;
+}
+
+var counter = makeCounter();
+print counter(); // "1".
+print counter(); // "2".
+print counter(); // "3".
+print counter(); // "4".
+print counter(); // "5".
+print counter(); // "6".
+print counter(); // "7".
+print counter(); // "8".
+
+var double = doubleCounter(counter);
+print double(); // 10
+print double(); // 12
+print double(); // 14
