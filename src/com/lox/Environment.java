@@ -42,7 +42,7 @@ public class Environment {
             this.enclosing.assign(name, value);
             return;
         }
-        System.out.println();
+
         throw new RuntimeError(name,"Undefined variable '" + name.lexeme + "'.");
     }
 }
