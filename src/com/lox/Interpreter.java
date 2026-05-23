@@ -1,15 +1,33 @@
 package com.lox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
+    Environment globals = new Environment();
+    private Environment environment = globals;
 
-    private Environment environment = new Environment();
+    public Interpreter() {
+        globals.define("clock", new LoxCallable() {
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double) System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public String toString() { return "<native fn>"; }
+        });
+    }
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-environment.assign(expr.name, value);
+        environment.assign(expr.name, value);
         return value;
     }
 
@@ -78,9 +96,9 @@ environment.assign(expr.name, value);
     @Override
     public Object visitLogicalExpr(Expr.Logical expr) {
         Object left = evaluate(expr.left);
-        if (expr.operator.type == TokenType.OR){
+        if (expr.operator.type == TokenType.OR) {
             if (isTruthy(left)) return left;
-        } else{
+        } else {
             if (!isTruthy(left)) return left;
         }
         return evaluate(expr.right);
@@ -99,6 +117,27 @@ environment.assign(expr.name, value);
             case BANG -> !isTruthy(right);
             default -> null;
         };
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr) {
+        Object callee = evaluate(expr.callee);
+        List<Object> arguments = new ArrayList<>();
+        for (Expr argument : expr.arguments) {
+            arguments.add(evaluate(argument));
+        }
+
+        if (!(callee instanceof LoxCallable)) {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+        LoxCallable function = (LoxCallable) callee;
+        if (function.arity() != arguments.size()) {
+            throw new RuntimeError(expr.paren, "Expected " +
+                    function.arity() + " arguments but got " +
+                    arguments.size() + ".");
+        }
+
+        return function.call(this, arguments);
     }
 
 
@@ -143,6 +182,7 @@ environment.assign(expr.name, value);
 
 
     Object interpret(List<Stmt> stmts) {
+
         Object lastResult = null;
 
         try {
@@ -178,25 +218,29 @@ environment.assign(expr.name, value);
 
     @Override
     public Object visitIfStmt(Stmt.If stmt) {
-        if (isTruthy(evaluate(stmt.condition))){
+        if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
-        } else{
+        } else {
             execute(stmt.elseBranch);
         }
         return null;
     }
 
     @Override
+    public Object visitFunctionStmt(Stmt.Function stmt) {
+        LoxFunction function = new LoxFunction(stmt);
+        environment.define(stmt.name.lexeme, function);
+        return null;
+    }
+
+    @Override
     public Object visitWhileStmt(Stmt.While stmt) {
-        while (isTruthy(evaluate(stmt.condition))){
+        while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
         return null;
     }
 
-    private void extracted(Stmt.If stmt) {
-        evaluate(stmt.condition);
-    }
 
     @Override
     public Object visitPrintStmt(Stmt.Print stmt) {
@@ -226,12 +270,12 @@ environment.assign(expr.name, value);
         return executeBlock(stmt.statements, new Environment(environment));
     }
 
-    private Object executeBlock(List<Stmt> statements, Environment environment) {
+    Object executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
         Object result = null;
-        try{
+        try {
             this.environment = environment;
-            for (Stmt statement: statements){
+            for (Stmt statement : statements) {
                 result = execute(statement);
             }
         } finally {
