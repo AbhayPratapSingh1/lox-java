@@ -1,0 +1,344 @@
+// ==============================
+// Mini Test Framework
+// ==============================
+
+var passed = 0;
+var failed = 0;
+
+fun assertEqual(name, actual, expected) {
+  if (actual == expected) {
+    print "[PASS] " + name;
+    passed = passed + 1;
+  } else {
+    print "[FAIL] " + name +
+          " expected=" + expected +
+          " got=" + actual;
+    failed = failed + 1;
+  }
+}
+
+fun summary() {
+  print "";
+  print "====================";
+  print "Passed: " + passed;
+  print "Failed: " + failed;
+  print "====================";
+}
+
+// ==============================
+// Arithmetic Tests
+// ==============================
+
+fun testArithmetic() {
+  assertEqual("1 + 2", 1 + 2, 3);
+  assertEqual("5 - 3", 5 - 3, 2);
+  assertEqual("4 * 3", 4 * 3, 12);
+  assertEqual("8 / 2", 8 / 2, 4);
+}
+
+// ==============================
+// Variables
+// ==============================
+
+fun testVariables() {
+  var x = 10;
+  var y = 20;
+
+  assertEqual("variable x", x, 10);
+  assertEqual("variable y", y, 20);
+  assertEqual("x + y", x + y, 30);
+}
+
+// ==============================
+// Scope
+// ==============================
+
+fun testScope() {
+  var a = "global";
+
+  {
+    var a = "block";
+    assertEqual("inner scope", a, "block");
+  }
+
+  assertEqual("outer scope", a, "global");
+}
+
+// ==============================
+// Functions
+// ==============================
+
+fun add(a, b) {
+  return a + b;
+}
+
+fun testFunctions() {
+  assertEqual("function add", add(3, 4), 7);
+}
+
+// ==============================
+// Recursion
+// ==============================
+
+fun factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);
+}
+
+fun testRecursion() {
+  assertEqual("factorial 5", factorial(5), 120);
+}
+
+// ==============================
+// Closures
+// ==============================
+
+fun makeCounter() {
+  var count = 0;
+
+  fun inc() {
+    count = count + 1;
+    return count;
+  }
+
+  return inc;
+}
+
+fun testClosures() {
+  var c = makeCounter();
+
+  assertEqual("closure 1", c(), 1);
+  assertEqual("closure 2", c(), 2);
+  assertEqual("closure 3", c(), 3);
+}
+
+// ==============================
+// Loops
+// ==============================
+
+fun testLoops() {
+  var sum = 0;
+
+  for (var i = 1; i <= 5; i = i + 1) {
+    print sum;
+    sum = sum + i;
+  }
+
+  assertEqual("loop sum", sum, 15);
+}
+
+// ==============================
+// Logical Operators
+// ==============================
+
+fun testLogic() {
+  assertEqual("true and false", true and false, false);
+  assertEqual("true or false", true or false, true);
+  assertEqual("!false", !false, true);
+}
+
+// ==============================
+// Classes
+// ==============================
+
+class Person {
+  init(name) {
+    this.name = name;
+  }
+
+  greet() {
+    return "hello " + this.name;
+  }
+}
+
+fun testClasses() {
+  var p = Person("lox");
+
+  assertEqual(
+    "class method",
+    p.greet(),
+    "hello lox"
+  );
+}
+
+// ==============================
+// this
+// ==============================
+
+class Counter {
+  init() {
+    this.value = 0;
+  }
+
+  inc() {
+    this.value = this.value + 1;
+    return this.value;
+  }
+}
+
+fun testThis() {
+  var c = Counter();
+
+  assertEqual("this 1", c.inc(), 1);
+  assertEqual("this 2", c.inc(), 2);
+}
+
+// ==============================
+// Bound Methods
+// ==============================
+
+fun testBoundMethods() {
+  var c = Counter();
+
+  var method = c.inc;
+
+  assertEqual("bound method 1", method(), 1);
+  assertEqual("bound method 2", method(), 2);
+}
+
+// ==============================
+// Inheritance
+// ==============================
+
+class Animal {
+  speak() {
+    return "animal";
+  }
+}
+
+class Dog < Animal {
+}
+
+fun testInheritance() {
+  var d = Dog();
+
+  assertEqual(
+    "inherit method",
+    d.speak(),
+    "animal"
+  );
+}
+
+// ==============================
+// super
+// ==============================
+
+class A {
+  method() {
+    return "A";
+  }
+}
+
+class B < A {
+  method() {
+    return "B";
+  }
+
+  test() {
+    return super.method();
+  }
+}
+
+fun testSuper() {
+  var b = B();
+
+  assertEqual(
+    "super method",
+    b.test(),
+    "A"
+  );
+}
+
+// ==============================
+// Fibonacci
+// ==============================
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+
+fun testFib() {
+  assertEqual("fib 10", fib(10), 55);
+}
+
+// ==============================
+// Deep Closures
+// ==============================
+
+fun outer() {
+  var x = "outside";
+
+  fun middle() {
+    fun inner() {
+      return x;
+    }
+
+    return inner;
+  }
+
+  return middle();
+}
+
+fun testDeepClosure() {
+  var fn = outer();
+
+  assertEqual(
+    "deep closure",
+    fn(),
+    "outside"
+  );
+}
+
+// ==============================
+// Stress Allocation
+// ==============================
+
+class Node {
+  init(value, next) {
+    this.value = value;
+    this.next = next;
+  }
+}
+
+fun testAllocation() {
+  var head = nil;
+
+  for (var i = 0; i < 500; i = i + 1) {
+    head = Node(i, head);
+  }
+
+  print "[PASS] allocation stress";
+  passed = passed + 1;
+}
+
+// ==============================
+// Run All Tests
+// ==============================
+
+fun runTests() {
+  print "Running Lox Tests...";
+  print "";
+/*
+  testArithmetic();
+  testVariables();
+  testScope();
+  testFunctions();
+  testRecursion();
+  testClosures();
+  */
+  testLoops();
+  testLogic();
+  testClasses();
+  testThis();
+  testBoundMethods();
+  testInheritance();
+  testSuper();
+  testFib();
+  testDeepClosure();
+  testAllocation();
+
+  summary();
+}
+
+runTests();

@@ -82,11 +82,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                 return (Double) left * (Double) right;
 
             case EQUAL_EQUAL:
-                checkNumberOperant(expr.operator, left, right);
                 return isEqual(left, right);
 
             case BANG_EQUAL:
-                checkNumberOperant(expr.operator, left, right);
                 return !isEqual(left, right);
 
             case PLUS:
