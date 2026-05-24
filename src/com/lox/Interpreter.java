@@ -1,11 +1,14 @@
 package com.lox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     Environment globals = new Environment();
     private Environment environment = globals;
+    private final Map<Expr, Integer> locals = new HashMap<>();
 
     public Interpreter() {
         globals.define("clock", new LoxCallable() {
@@ -20,14 +23,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             }
 
             @Override
-            public String toString() { return "<native fn>"; }
+            public String toString() {
+                return "<native fn>";
+            }
         });
     }
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
         Object value = evaluate(expr.value);
-        environment.assign(expr.name, value);
+        Integer distance = locals.get(expr);
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value);
+        } else{
+            globals.assign(expr.name, value);
+        }
+
         return value;
     }
 
@@ -140,6 +151,29 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return function.call(this, arguments);
     }
 
+    @Override
+    public Object visitGetExpr(Expr.Get expr) {
+        Object object = evaluate(expr.object);
+        if (object instanceof  LoxInstance){
+            return ((LoxInstance) object).get(expr.name);
+        }
+
+        throw new RuntimeError(expr.name,
+                "Only instances have properties.");
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr) {
+        Object object = evaluate(expr.object);
+        if (!(object instanceof LoxInstance)){
+            throw new RuntimeError(expr.name, "Only instances have fields.");
+        }
+        Object value = evaluate(expr.value);
+
+        ((LoxInstance)object).set(expr.name, value);
+        return null;
+    }
+
 
     private boolean isTruthy(Object value) {
         if (value == null) return false;
@@ -217,10 +251,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     @Override
+    public Object visitClassStmt(Stmt.Class stmt) {
+        environment.define(stmt.name.lexeme,null );
+
+        HashMap<String, LoxFunction> methods = new HashMap<>();
+         for (Stmt.Function method :stmt.methods) {
+             LoxFunction loxMethod = new LoxFunction(method, environment);
+             methods.put(method.name.lexeme,loxMethod);
+         }
+
+        LoxClass klass = new LoxClass(stmt.name.lexeme,methods);
+        environment.assign(stmt.name, klass);
+        return null;
+    }
+
+    @Override
     public Object visitIfStmt(Stmt.If stmt) {
         if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
-        } else if (stmt.elseBranch != null){
+        } else if (stmt.elseBranch != null) {
             execute(stmt.elseBranch);
         }
         return null;
@@ -228,7 +277,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitFunctionStmt(Stmt.Function stmt) {
-        LoxFunction function = new LoxFunction(stmt);
+        LoxFunction function = new LoxFunction(stmt, this.environment);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
@@ -260,7 +309,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitVariableExpr(Expr.Variable expr) {
-        return environment.get(expr.name);
+        return lookUpVariable(expr.name, expr);
+    }
+
+    private Object lookUpVariable(Token name, Expr expr) {
+        Integer depth = locals.get(expr);
+        if (depth != null) {
+            return environment.getAt(depth, name.lexeme);
+        }
+        return globals.get(name);
     }
 
     @Override
@@ -291,5 +348,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
             this.environment = previous;
         }
         return result;
+    }
+
+    public void resolve(Expr expr, int depth) {
+        locals.put(expr, depth);
     }
 }

@@ -61,3 +61,27 @@ part 8.5
 1. Scoping is like calling a method with different environment scope.
 2. Also resetting it once it stop executing the block.
 3. Left brace is responsible for starting new block and the right block is responsible for the right brace.
+
+
+24-05-2025
+Chapter 12
+part 12.1 - 12.3
+
+1. its about the class in the last few chapter i didn't noted anything, it is same as the declaring the function.
+2. after capturing about the class name and basic syntactics. capturing all the methods
+3. after that treat the class as a callable since it is a callable so that it can create a instance of it
+4. on calling it it should return the instance of itself.
+
+part 12.4
+
+1. its not fancy there, just a simple create of the field map in the instance object
+2. field can be set and get by capturing it in the parser, previously we are trying check continuous function call, just like that we check for the dot and return the new type as seting up the field
+3. get is easy in the place where we are trying to capture the value we are just trying to capture the dot an if we find then we are referencing to the object get method.
+
+
+part 12.5
+
+1. adding features now seems so easy, add to ast generator and after that add some property according to the logic.
+2. Base/structure of the code matters a lot!
+3. Methods addition is simple just take the methods and pass to the class declaration, whenever some try to access it just go to parent find it and return
+

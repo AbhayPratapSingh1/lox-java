@@ -109,6 +109,18 @@ private FunctionType currentFunction = FunctionType.NONE;
     }
 
     @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        declare(stmt.name);
+        define(stmt.name);
+        for (Stmt.Function method : stmt.methods) {
+            FunctionType declaration = FunctionType.METHOD;
+            resolveFunction(method, declaration);
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visitIfStmt(Stmt.If stmt) {
         resolve(stmt.condition);
         resolve(stmt.thenBranch);
@@ -156,6 +168,19 @@ private FunctionType currentFunction = FunctionType.NONE;
             resolve(argument);
         }
 
+        return null;
+    }
+
+    @Override
+    public Void visitGetExpr(Expr.Get expr) {
+        resolve(expr.object);
+        return null;
+    }
+
+    @Override
+    public Void visitSetExpr(Expr.Set expr) {
+        define(expr.name);
+        declare(expr.name);
         return null;
     }
 
