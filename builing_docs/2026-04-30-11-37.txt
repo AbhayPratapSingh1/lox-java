@@ -89,3 +89,16 @@ part 12.6
 
 1. "this" is nothing special as i assumed it is just the reference of itself. in this too we didn't do anything special. they/I just created a new Environment for the methods. every method get a closure kind of environment with this as the reference to the own object.
 
+
+part 12.7
+
+1. constructor, nothing special after all, just a method which we call by our own.
+2. but return type of it is fixed properly since, user can return anything. but constructor should always return this.
+3. user can return null/nil but it should always be returning the this.
+
+part 13.1-13.2
+
+1. super class and sub class
+2. for parser its easy nothing there just capture it and add it to the object.
+3. for the interpreter too its not too hard as per just calling it since in find method we just have to return superClass.findMethod()
+4. for the super keyword, we didn't implement it but i think it is same as this keyword, refer to the parent.

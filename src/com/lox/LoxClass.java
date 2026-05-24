@@ -6,11 +6,13 @@ import java.util.List;
 public class LoxClass implements  LoxCallable{
     final String name;
 
+    private final LoxClass superClass;
     private HashMap<String, LoxFunction> methods;
 
 
-    public LoxClass(String name, HashMap<String, LoxFunction> methods) {
+    public LoxClass(String name, LoxClass superClass, HashMap<String, LoxFunction> methods) {
         this.name = name;
+        this.superClass = superClass;
         this.methods = methods;
     }
 
@@ -41,6 +43,8 @@ public class LoxClass implements  LoxCallable{
 
     public LoxFunction findMethod(String name) {
         if (methods.containsKey(name)) return methods.get(name);
+        if (superClass != null) return superClass.findMethod(name);
+
         return null;
     }
 }

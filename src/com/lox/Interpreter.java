@@ -257,6 +257,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitClassStmt(Stmt.Class stmt) {
+        Object superClass = null;
+        if (stmt.superclass != null){
+            superClass = evaluate(stmt.superclass);
+            if (!(superClass instanceof  LoxClass)){
+                throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
+            }
+        }
         environment.define(stmt.name.lexeme,null );
 
         HashMap<String, LoxFunction> methods = new HashMap<>();
@@ -265,7 +272,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
              methods.put(method.name.lexeme,loxMethod);
          }
 
-        LoxClass klass = new LoxClass(stmt.name.lexeme,methods);
+        LoxClass klass = new LoxClass(stmt.name.lexeme,(LoxClass) superClass, methods);
         environment.assign(stmt.name, klass);
         return null;
     }

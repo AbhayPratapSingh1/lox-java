@@ -26,8 +26,8 @@ public class Parser {
             if (expr instanceof Expr.Variable) {
                 Token name = ((Expr.Variable) expr).name;
                 return new Expr.Assign(name, value);
-            } else if(expr instanceof Expr.Get get){
-                return new Expr.Set(get.object,get.name, value);
+            } else if (expr instanceof Expr.Get get) {
+                return new Expr.Set(get.object, get.name, value);
             }
 
             error(equals, "Invalid assignment target.");
@@ -107,13 +107,20 @@ public class Parser {
 
     private Stmt classStatement() {
         Token name = consume(IDENTIFIER, "Expect class name.");
+
+        Expr.Variable superClass = null;
+        if (match(LESS)) {
+            consume(IDENTIFIER, "Expect superclass name.");
+            superClass = new Expr.Variable(previous());
+        }
+
         consume(LEFT_BRACE, "Expect '{' before class body.");
         ArrayList<Stmt.Function> methods = new ArrayList<>();
-        while (!check(RIGHT_BRACE) && !isAtEnd()){
+        while (!check(RIGHT_BRACE) && !isAtEnd()) {
             methods.add(function("method"));
         }
         consume(RIGHT_BRACE, "Expect '}' after class body.");
-        return new Stmt.Class(name, methods);
+        return new Stmt.Class(name, superClass, methods);
     }
 
     private Stmt returnStatement() {
@@ -271,7 +278,7 @@ public class Parser {
                 expr = finishCall(expr);
             } else if (match(DOT)) {
                 Token name = consume(IDENTIFIER, "Expect property name after '.'.");
-                expr  = new Expr.Get(expr, name);
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
