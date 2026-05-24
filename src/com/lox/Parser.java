@@ -1,6 +1,5 @@
 package com.lox;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +8,6 @@ import static com.lox.TokenType.*;
 public class Parser {
     private final List<Token> tokens;
     private int current = 0;
-    private Exception error;
-    private Stmt classStatemetn;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -301,7 +298,6 @@ public class Parser {
         if (match(TRUE)) return new Expr.Literal(true);
         if (match(NIL)) return new Expr.Literal(null);
 
-
         if (match(STRING, NUMBER)) return new Expr.Literal(previous().literal);
 
         if (match(LEFT_PAREN)) {
@@ -309,6 +305,8 @@ public class Parser {
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
+        if (match(THIS)) return new Expr.This(previous());
+
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
         }

@@ -174,6 +174,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
         return null;
     }
 
+    @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVariable(expr.keyword, expr);
+    }
+
 
     private boolean isTruthy(Object value) {
         if (value == null) return false;

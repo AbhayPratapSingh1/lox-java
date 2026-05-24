@@ -8,7 +8,8 @@ import java.util.Stack;
 public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private Interpreter interpreter;
     private Stack<Map<String, Boolean>> scopes = new Stack<>();
-private FunctionType currentFunction = FunctionType.NONE;
+    private FunctionType currentFunction = FunctionType.NONE;
+    private ClassType currentClass = ClassType.NONE;
 
     public Resolver(Interpreter interpreter) {
         this.interpreter = interpreter;
@@ -41,19 +42,18 @@ private FunctionType currentFunction = FunctionType.NONE;
     }
 
 
-
     private void declare(Token name) {
         if (scopes.isEmpty()) return;
         Map<String, Boolean> scope = scopes.peek();
-        if (scope.containsKey(name)){
+        if (scope.containsKey(name)) {
             Lox.error(name, "Already a variable with this name in this scope.");
         }
         scope.put(name.lexeme, false);
     }
 
     @Override
-    public Void visitVariableExpr(Expr.Variable expr){
-        if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE){
+    public Void visitVariableExpr(Expr.Variable expr) {
+        if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
             Lox.error(expr.name, "Can't read local variable in its own initializer.");
         }
 
@@ -62,9 +62,9 @@ private FunctionType currentFunction = FunctionType.NONE;
     }
 
     private void resolveLocal(Expr expr, Token name) {
-        for (int i = scopes.size() - 1; i >= 0; i--){
-            if (scopes.get(i).containsKey(name.lexeme)){
-                interpreter.resolve(expr, scopes.size() - 1-i);
+        for (int i = scopes.size() - 1; i >= 0; i--) {
+            if (scopes.get(i).containsKey(name.lexeme)) {
+                interpreter.resolve(expr, scopes.size() - 1 - i);
             }
         }
     }
@@ -110,13 +110,21 @@ private FunctionType currentFunction = FunctionType.NONE;
 
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
+        ClassType classEnclosing = currentClass;
+        currentClass = ClassType.CLASS;
+
         declare(stmt.name);
         define(stmt.name);
+
+        beginScope();
+        scopes.peek().put("this", true);
         for (Stmt.Function method : stmt.methods) {
             FunctionType declaration = FunctionType.METHOD;
             resolveFunction(method, declaration);
         }
+        endScope();
 
+        currentClass=classEnclosing;
         return null;
     }
 
@@ -181,6 +189,16 @@ private FunctionType currentFunction = FunctionType.NONE;
     public Void visitSetExpr(Expr.Set expr) {
         define(expr.name);
         declare(expr.name);
+        return null;
+    }
+
+    @Override
+    public Void visitThisExpr(Expr.This expr) {
+        if (currentClass == ClassType.NONE){
+            Lox.error(expr.keyword, "Can't use 'this' outside of a class.");
+            return null;
+        }
+        resolveLocal(expr, expr.keyword);
         return null;
     }
 

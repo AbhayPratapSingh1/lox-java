@@ -85,3 +85,7 @@ part 12.5
 2. Base/structure of the code matters a lot!
 3. Methods addition is simple just take the methods and pass to the class declaration, whenever some try to access it just go to parent find it and return
 
+part 12.6
+
+1. "this" is nothing special as i assumed it is just the reference of itself. in this too we didn't do anything special. they/I just created a new Environment for the methods. every method get a closure kind of environment with this as the reference to the own object.
+
