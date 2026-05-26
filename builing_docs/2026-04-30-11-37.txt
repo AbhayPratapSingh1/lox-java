@@ -111,3 +111,9 @@ Date 25-05-2025
 4. 2 possible cause which i can assume is that.
     - 1. for loop is not creating the variable;
     - 2. while resolving it is giving the wrong the locals depth value.
+
+Date 26-05-2025
+1. Finally, bugs are fixed
+2. I added the logger for logging out the output.
+3. now I need to add a class which will be responsible for talking the logger and string data and run the program.
+4. it is for the next goal which is make a webapp for it.

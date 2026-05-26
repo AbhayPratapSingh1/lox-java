@@ -11,23 +11,31 @@ import java.util.List;
 public class Lox {
     private static boolean hasError = false;
     private static boolean hadRuntimeError = false;
+    public static Logger logger = new ConsoleLogger();
 
-
-
+    public static void setLogger(Logger newLogger){
+        logger = newLogger;
+    }
     static void main(String[] args) throws IOException {
-        if (args.length > 1) {
-            System.out.println("Usage: jlox [script]");
-            System.exit(64);
-        } else if (args.length == 1) {
-            byte[] fileContent = Files.readAllBytes(Paths.get(args[0]));
-            runFile(fileContent);
-        } else {
-            System.out.println(" REPL");
-            runInteractive();
+        try{
+            if (args.length > 1) {
+                logger.println("Usage: jlox [script]");
+                System.exit(64);
+            } else if (args.length == 1) {
+                byte[] fileContent = Files.readAllBytes(Paths.get(args[0]));
+                runFile(fileContent);
+            } else {
+                logger.println(" REPL");
+                runInteractive();
+            }
+        } catch (Exception e) {
+            logger.println("erorr");
+            logger.println(e);
+            throw new RuntimeException(e);
         }
     }
 
-    private static void runFile(byte[] fileContent) throws IOException {
+    public static void runFile(byte[] fileContent) throws IOException {
         run(new String(fileContent, Charset.defaultCharset()));
 
         if (hasError) {
@@ -38,18 +46,18 @@ public class Lox {
         }
     }
 
-    static void runInteractive() throws IOException {
+    public static void runInteractive() throws IOException {
         InputStreamReader inputStream = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(inputStream);
 
         while (true) {
             String line = reader.readLine();
-            System.out.println("INTERPRETER MODE : " + line);
+            logger.println("INTERPRETER MODE : " + line);
             if (line.equals("exit")) {
                 break;
             }
             Object result = run(line);
-            System.out.println(result);
+            logger.println(result);
             hasError = false;
             hadRuntimeError = false;
         }
@@ -57,10 +65,7 @@ public class Lox {
 
     public static Object run(String source) throws IOException {
         Scanner scanner = new Scanner(source);
-
-
-        Logger consoleLogger = new FileLogger("./output/output");
-        Interpreter interpreter = new Interpreter(consoleLogger);
+        Interpreter interpreter = new Interpreter(logger);
         List<Token> tokens = scanner.scanTokens();
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
@@ -80,7 +85,7 @@ public class Lox {
     }
 
     private static void report(int line, String where, String message) {
-        System.out.println("[line " + line + "] Error " + where + ": " + message);
+        logger.error("[line " + line + "] Error " + where + ": " + message);
         hasError = true;
     }
 
@@ -93,7 +98,7 @@ public class Lox {
     }
 
     public static void runTimeError(RuntimeError error) {
-        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        logger.error(error.getMessage() + "\n[line " + error.token.line + "]");
         hadRuntimeError = true;
     }
 }

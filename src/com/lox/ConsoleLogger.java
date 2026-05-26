@@ -9,4 +9,9 @@ public class ConsoleLogger implements Logger {
     public void print(Object obj){
         System.out.print(obj);
     }
+
+    @Override
+    public  void error(Object obj){
+        System.err.println(obj);
+    }
 }
