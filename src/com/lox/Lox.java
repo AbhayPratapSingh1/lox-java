@@ -11,7 +11,8 @@ import java.util.List;
 public class Lox {
     private static boolean hasError = false;
     private static boolean hadRuntimeError = false;
-    private static final Interpreter interpreter = new Interpreter();
+
+
 
     static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -26,7 +27,7 @@ public class Lox {
         }
     }
 
-    private static void runFile(byte[] fileContent) {
+    private static void runFile(byte[] fileContent) throws IOException {
         run(new String(fileContent, Charset.defaultCharset()));
 
         if (hasError) {
@@ -54,11 +55,16 @@ public class Lox {
         }
     }
 
-    public static Object run(String source) {
+    public static Object run(String source) throws IOException {
         Scanner scanner = new Scanner(source);
+
+
+        Logger consoleLogger = new FileLogger("./output/output");
+        Interpreter interpreter = new Interpreter(consoleLogger);
         List<Token> tokens = scanner.scanTokens();
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
+
 
         if (hasError) return null;
         Resolver resolver = new Resolver(interpreter);

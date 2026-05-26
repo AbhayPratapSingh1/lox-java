@@ -1,0 +1,22 @@
+class Animal {
+    getSpecies(){
+        return "Species";
+    }
+}
+
+
+class Dog < Animal{
+    init(name){
+       this.name = name;
+    }
+    say(){
+        print super.getSpecies();
+        return "Bark";
+    }
+}
+
+var dog = Dog("Tommy");
+print dog;
+
+print dog.getSpecies();
+print dog.say();

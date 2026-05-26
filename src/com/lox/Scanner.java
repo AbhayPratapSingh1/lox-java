@@ -39,7 +39,6 @@ public class Scanner {
         this.source = source;
     }
 
-
     public List<Token> scanTokens() {
         while (!isAtEnd()) {
             start = current;

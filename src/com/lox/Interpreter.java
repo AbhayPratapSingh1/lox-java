@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
+    private final Logger consoleLogger;
     Environment globals = new Environment();
     private Environment environment = globals;
     private final Map<Expr, Integer> locals = new HashMap<>();
 
-    public Interpreter() {
+    public Interpreter(Logger consoleLogger) {
+        this.consoleLogger = consoleLogger;
         globals.define("clock", new LoxCallable() {
             @Override
             public Object call(Interpreter interpreter, List<Object> arguments) {
@@ -334,7 +336,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     @Override
     public Object visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
-        System.out.println(stringify(value));
+        consoleLogger.println(stringify(value));
         return null;
     }
 
