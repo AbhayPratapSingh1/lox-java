@@ -98,7 +98,16 @@ part 12.7
 
 part 13.1-13.2
 
-1. super class and sub class
+1. super class and subclass
 2. for parser its easy nothing there just capture it and add it to the object.
 3. for the interpreter too its not too hard as per just calling it since in find method we just have to return superClass.findMethod()
 4. for the super keyword, we didn't implement it but i think it is same as this keyword, refer to the parent.
+
+Date 25-05-2025
+
+1. I found the bug
+2. i mistakenly create some problem in the for loop.
+3. i found that the parser is working fine and passing the values to the interpreter.
+4. 2 possible cause which i can assume is that.
+    - 1. for loop is not creating the variable;
+    - 2. while resolving it is giving the wrong the locals depth value.

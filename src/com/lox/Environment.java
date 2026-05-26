@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class Environment {
 
     Environment enclosing;
+    private final HashMap<String, Object> values = new HashMap<>();
 
     public Environment(Environment enclosing) {
         this.enclosing = enclosing;
@@ -14,7 +15,6 @@ public class Environment {
         this.enclosing = null;
     }
 
-    private final HashMap<String, Object> values = new HashMap<>();
 
     void define(String name, Object value) {
         values.put(name, value);
@@ -53,7 +53,7 @@ public class Environment {
     private Environment ancestor(Integer distance) {
         Environment environment = this;
         for (int i = 0 ; i< distance; i++){
-            environment = this.enclosing;
+            environment = environment.enclosing;
         }
         return environment;
     }

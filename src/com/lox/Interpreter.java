@@ -97,6 +97,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
                     return left + (String) right;
                 }
 
+                if (left instanceof String || right instanceof String) {
+                    return String.valueOf(left)+ String.valueOf(right);
+                }
+
+
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
         }
         return null;
@@ -346,6 +351,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
     }
 
     private Object lookUpVariable(Token name, Expr expr) {
+
         Integer depth = locals.get(expr);
         if (depth != null) {
             return environment.getAt(depth, name.lexeme);
@@ -370,18 +376,19 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     Object executeBlock(List<Stmt> statements, Environment environment) {
         Environment previous = this.environment;
-        Object result = null;
+
         try {
             this.environment = environment;
             for (Stmt statement : statements) {
-
-                result = execute(statement);
+                execute(statement);
             }
         } finally {
             this.environment = previous;
         }
-        return result;
+        return null;
     }
+
+
 
     public void resolve(Expr expr, int depth) {
         locals.put(expr, depth);

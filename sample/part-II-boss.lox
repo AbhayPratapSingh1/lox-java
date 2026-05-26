@@ -118,9 +118,7 @@ fun testClosures() {
 
 fun testLoops() {
   var sum = 0;
-
   for (var i = 1; i <= 5; i = i + 1) {
-    print sum;
     sum = sum + i;
   }
 
@@ -319,26 +317,31 @@ fun testAllocation() {
 fun runTests() {
   print "Running Lox Tests...";
   print "";
-/*
-  testArithmetic();
+  testArithmetic(); // 1
   testVariables();
-  testScope();
+  testScope(); // 3
   testFunctions();
-  testRecursion();
+  testRecursion(); // 4
   testClosures();
-  */
-  testLoops();
+
+  testLoops(); // 6
+
   testLogic();
-  testClasses();
+
+  testClasses(); // 8
+
+
   testThis();
-  testBoundMethods();
+
+  testBoundMethods();  // 10
+
   testInheritance();
-  testSuper();
+  testSuper();  // 12
   testFib();
-  testDeepClosure();
+  testDeepClosure();  // 14
   testAllocation();
 
-  summary();
+   summary();  // 16
 }
 
 runTests();
