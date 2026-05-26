@@ -276,13 +276,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     @Override
     public Object visitClassStmt(Stmt.Class stmt) {
-        Object superClass = null;
+        LoxClass superClass = null;
         if (stmt.superclass != null) {
-            superClass = evaluate(stmt.superclass);
-            if (!(superClass instanceof LoxClass)) {
+            Object evaluated = evaluate(stmt.superclass);
+            if (!(evaluated instanceof LoxClass)) {
                 throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
             }
+            superClass  = (LoxClass) evaluated;
         }
+
         environment.define(stmt.name.lexeme, null);
         if (stmt.superclass != null) {
             environment = new Environment(environment);
@@ -291,11 +293,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
         HashMap<String, LoxFunction> methods = new HashMap<>();
         for (Stmt.Function method : stmt.methods) {
-            LoxFunction loxMethod = new LoxFunction(method, environment, method.name.equals("init"));
+            LoxFunction loxMethod = new LoxFunction(method, environment, method.name.lexeme.equals("init"));
             methods.put(method.name.lexeme, loxMethod);
         }
 
-        LoxClass klass = new LoxClass(stmt.name.lexeme, (LoxClass) superClass, methods);
+        LoxClass klass = new LoxClass(stmt.name.lexeme, superClass, methods);
         if (stmt.superclass != null) {
             environment = environment.enclosing;
         }
@@ -392,5 +394,6 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Object> {
 
     public void resolve(Expr expr, int depth) {
         locals.put(expr, depth);
+
     }
 }
